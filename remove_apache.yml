@@ -1,0 +1,15 @@
+---
+# install apache on target servers
+- hosts: all
+  become: true
+  tasks:
+
+  - name: remove apache2 package
+    ansible.builtin.yum:
+      name: httpd
+      state: absent
+
+  - name: remove support for php
+    ansible.builtin.yum:
+      name: php
+      state: absent
