@@ -1,0 +1,19 @@
+---
+- hosts: web_servers
+  become: true
+  tasks:
+  - name: install apache on web servers
+    ansible.builtin.yum:
+      name:
+        - httpd
+        - php
+    when: ansible_os_family == "RedHat"
+
+- hosts: db_servers
+  become: true
+  tasks:
+    - name: install mariadb package on db servers
+      ansible.builtin.yum:
+        name: mariadb
+        state: latest
+      when: ansible_os_family == "RedHat"
