@@ -3,13 +3,47 @@
   become: true
   tasks:
   - name: install apache on web servers
+    tags: apache,redhat
     ansible.builtin.yum:
       name:
         - httpd
         - php
     when: ansible_os_family == "RedHat"
 
+  - name: ensure apache/httpd is running (redhat)
+    tags: apache,redhat
+    ansible.builtin.service:
+      name: httpd
+      state: started
+    when: ansible_os_family == "RedHat"
+
+  - name: change email address for admin
+    tags: apache,redhat
+    ansible.builtin.lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin markm@udemy.com
+    when: ansible_os_family == "RedHat"
+    register: httpd
+
+  - name: restart httpd (redhat)
+    tags: apache,redhat
+    ansible.builtin.service:
+      name: httpd
+      state: restarted
+    when: httpd.changed
+
+  - name: copy html file for site
+    tags: apache,redhat
+    ansible.builtin.copy:
+      src: default_site.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+
 - hosts: db_servers
+  tags: db,redhat
   become: true
   tasks:
     - name: install mariadb package on db servers
